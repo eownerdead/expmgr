@@ -5,7 +5,7 @@ use std::str::FromStr;
 
 use adw::prelude::*;
 use gtk::glib;
-use relm4::factory::FactoryVecDeque;
+use relm4::factory::{FactoryVecDeque, WeakDynamicIndex};
 use relm4::{adw, gtk, send};
 use toml_edit as toml;
 use toml_edit::value;
@@ -16,8 +16,9 @@ use crate::list::List;
 pub(crate) enum AppMsg {
     Close,
     AddList,
-    DelList(usize),
-    UpdateList(usize, List),
+    DelList(WeakDynamicIndex),
+    Edit(WeakDynamicIndex),
+    EndEdit(WeakDynamicIndex, List),
 }
 
 pub(crate) struct AppModel {
@@ -44,13 +45,27 @@ impl relm4::AppUpdate for AppModel {
                 self.list.push_back(List {
                     name: "".to_string(),
                     expiration: glib::DateTime::now_local().unwrap(),
+                    editing: true,
                 });
             }
-            AppMsg::DelList(i) => {
+            AppMsg::DelList(idx) => {
+                let i = idx.upgrade().unwrap().current_index();
+
                 self.list.remove(i);
             }
-            AppMsg::UpdateList(i, x) => {
-                *self.list.get_mut(i).unwrap() = x;
+            AppMsg::Edit(idx) => {
+                let i = idx.upgrade().unwrap().current_index();
+
+                if let Some(pos) = self.list.iter().position(|i| i.editing) {
+                    self.list.get_mut(pos).unwrap().editing = false;
+                }
+                self.list.get_mut(i).unwrap().editing = true;
+            }
+            AppMsg::EndEdit(idx, new) => {
+                let i = idx.upgrade().unwrap().current_index();
+
+                *self.list.get_mut(i).unwrap() = new;
+                self.list.get_mut(i).unwrap().editing = false;
             }
         }
 
@@ -87,6 +102,7 @@ impl AppModel {
                 expiration: toml_to_glib_datetime(
                     v["expiration"].as_datetime().expect("expected datetime"),
                 ),
+                editing: false,
             })
         }
     }
@@ -155,8 +171,15 @@ impl relm4::Widgets<AppModel, ()> for AppWidgets {
                 },
                 append = &gtk::ScrolledWindow {
                     set_vexpand: true,
-                    set_child = Some(&gtk::ListBox) {
-                        factory!(model.list)
+                    set_child = Some(&adw::Clamp) {
+                        set_child = Some(&gtk::ListBox) {
+                            add_css_class: "content",
+                            set_margin_top: 12,
+                            set_margin_bottom: 12,
+                            set_margin_start: 12,
+                            set_margin_end: 12,
+                            factory!(model.list),
+                        }
                     }
                 }
             },

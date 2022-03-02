@@ -1,4 +1,5 @@
 use adw::prelude::*;
+use app::AppMsg;
 use glib::DateTime;
 use gtk::glib;
 use relm4::{adw, factory, gtk, send};
@@ -9,6 +10,8 @@ use super::app;
 pub(crate) struct List {
     pub name: String,
     pub expiration: DateTime,
+
+    pub editing: bool,
 }
 
 #[relm4::factory_prototype(pub(crate))]
@@ -21,47 +24,84 @@ impl factory::FactoryPrototype for List {
     view! {
         adw::ActionRow {
             set_selectable: false,
-            set_title: watch!(&self.name),
-            add_suffix = &gtk::Label {
-                set_label: watch!(&self.expiration.format("%x").unwrap()),
-            },
-            add_suffix = &gtk::MenuButton {
-                set_popover: popover = Some(&gtk::Popover) {
-                    set_child = Some(&gtk::Box) {
-                        set_orientation: gtk::Orientation::Vertical,
-                        append: name = &gtk::Entry {
-                            connect_activate(popover) => move |_| {
-                                popover.popdown();
-                            }
-                        },
-                        append: date = &gtk::Calendar {},
-                        append = &gtk::Button {
-                            set_label: "Delete",
-                            connect_clicked(sender, key, popover) => move |_| {
-                                // If do not close popover before remove this,
-                                // this app will freeze.
-                                popover.popdown();
-
+            set_child = Some(&gtk::Box) {
+                set_orientation: gtk::Orientation::Vertical,
+                append = &adw::ActionRow {
+                    set_title: watch!(&self.name),
+                    add_suffix = &gtk::Label {
+                        set_label: watch!(
+                            &self.expiration.format("%x").unwrap()
+                        ),
+                    },
+                    add_suffix = &gtk::ToggleButton {
+                        set_icon_name: "document-edit-symbolic",
+                        set_has_frame: false,
+                        set_valign: gtk::Align::Center,
+                        set_active: watch!(self.editing),
+                        connect_toggled(
+                            sender,
+                            key,
+                            name,
+                            date
+                        ) => move |button| {
+                            if button.is_active() {
+                                send!(sender, AppMsg::Edit(key.downgrade()));
+                            } else {
                                 send!(
                                     sender,
-                                    app::AppMsg::DelList(key.current_index())
+                                    AppMsg::EndEdit(
+                                        key.downgrade(),
+                                        List {
+                                            name: name.text().to_string(),
+                                            expiration: date.date(),
+                                            editing: false,
+                                        },
+                                    )
                                 );
                             }
                         },
                     },
+                },
+                append = &gtk::Revealer {
+                    set_reveal_child: watch!(self.editing),
 
-                    connect_closed(sender, key, name, date) => move |_| {
-                        send!(
-                            sender,
-                            app::AppMsg::UpdateList(
-                                key.current_index(),
-                                List {
-                                    name: name.text().to_string(),
-                                    expiration: date.date(),
-                                }
-                            )
-                        )
-                    }
+                    set_child = Some(&gtk::Box) {
+                        set_orientation: gtk::Orientation::Vertical,
+                        set_margin_top: 12,
+                        set_margin_bottom: 12,
+                        set_margin_start: 12,
+                        set_margin_end: 12,
+                        set_spacing: 6,
+                        append = &gtk::Label {
+                            set_text: "Name",
+                            add_css_class: "heading",
+                            set_justify: gtk::Justification::Left,
+                            set_xalign: 0.,
+                        },
+                        append: name = &gtk::Entry {
+                            set_text: watch!(&self.name),
+                        },
+                        append = &gtk::Label {
+                            set_text: "Expiration",
+                            add_css_class: "heading",
+                            set_justify: gtk::Justification::Left,
+                            set_xalign: 0.,
+                        },
+                        append: date = &gtk::Calendar {
+                            select_day: watch!(&self.expiration),
+                        },
+                        append = &gtk::Button {
+                            set_label: "Delete",
+                            add_css_class: "destructive-action",
+                            set_halign: gtk::Align::End,
+                            connect_clicked(sender, key) => move |_| {
+                                send!(
+                                    sender,
+                                    app::AppMsg::DelList(key.downgrade())
+                                );
+                            }
+                        },
+                    },
                 }
             }
         }
