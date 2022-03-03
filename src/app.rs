@@ -6,6 +6,7 @@ use std::str::FromStr;
 use adw::prelude::*;
 use gtk::glib;
 use relm4::factory::{FactoryVecDeque, WeakDynamicIndex};
+use relm4::util::widget_plus::WidgetPlus;
 use relm4::{adw, gtk, send};
 use toml_edit as toml;
 use toml_edit::value;
@@ -174,10 +175,7 @@ impl relm4::Widgets<AppModel, ()> for AppWidgets {
                     set_child = Some(&adw::Clamp) {
                         set_child = Some(&gtk::ListBox) {
                             add_css_class: "content",
-                            set_margin_top: 12,
-                            set_margin_bottom: 12,
-                            set_margin_start: 12,
-                            set_margin_end: 12,
+                            set_margin_all: 12,
                             factory!(model.list),
                         }
                     }

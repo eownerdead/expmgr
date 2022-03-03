@@ -2,6 +2,7 @@ use adw::prelude::*;
 use app::AppMsg;
 use glib::DateTime;
 use gtk::glib;
+use relm4::util::widget_plus::WidgetPlus;
 use relm4::{adw, factory, gtk, send};
 
 use super::app;
@@ -67,10 +68,7 @@ impl factory::FactoryPrototype for List {
 
                     set_child = Some(&gtk::Box) {
                         set_orientation: gtk::Orientation::Vertical,
-                        set_margin_top: 12,
-                        set_margin_bottom: 12,
-                        set_margin_start: 12,
-                        set_margin_end: 12,
+                        set_margin_all: 12,
                         set_spacing: 6,
                         append = &gtk::Label {
                             set_text: "Name",
