@@ -29,7 +29,7 @@ impl factory::FactoryPrototype for List {
                 set_orientation: gtk::Orientation::Vertical,
                 append = &adw::ActionRow {
                     set_title: watch!(&self.name),
-                    add_suffix = &gtk::Label {
+                    add_suffix: date_label = &gtk::Label {
                         set_label: watch!(
                             &self.expiration.format("%x").unwrap()
                         ),
@@ -105,5 +105,54 @@ impl factory::FactoryPrototype for List {
         }
     }
 
+    fn post_init(&self, widgets: &Self::Widgets) {
+        self.update_date_label(&date_label);
+    }
+
+    fn post_view(&self, widgets: &Self::Widgets) {
+        self.update_date_label(&widgets.date_label);
+    }
+
     fn position(&self, _key: &factory::DynamicIndex) {}
+}
+
+impl List {
+    fn update_date_label(&self, date_label: &gtk::Label) {
+        if expired(&self.expiration) {
+            date_label.remove_css_class("nearly-out-of-date");
+            date_label.add_css_class("out-of-date");
+        } else if nearly_expired(&self.expiration) {
+            date_label.remove_css_class("out-of-date");
+            date_label.add_css_class("nearly-out-of-date")
+        } else {
+            date_label.remove_css_class("out-of-date");
+            date_label.remove_css_class("nearly-out-of-date");
+        }
+    }
+}
+
+fn expired(date: &glib::DateTime) -> bool {
+    *date < floor_time(&glib::DateTime::now_local().unwrap())
+}
+
+// 1 week to expiry date.
+fn nearly_expired(date: &glib::DateTime) -> bool {
+    *date
+        < floor_time(&glib::DateTime::now_local().unwrap())
+            .add_weeks(1)
+            .unwrap()
+}
+
+// Set time to zero and leave date.
+fn floor_time(date: &glib::DateTime) -> glib::DateTime {
+    glib::DateTime::new(
+        &date.timezone(),
+        date.year(),
+        date.month(),
+        date.day_of_month(),
+        0,  // hour
+        0,  // minute
+        0., // seconds
+    )
+    .unwrap()
 }
