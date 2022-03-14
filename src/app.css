@@ -1,9 +1,0 @@
-.out-of-date {
-    color: @error_color;
-    font-weight: bold;
-}
-
-.nearly-out-of-date {
-    color: @warning_color;
-    font-weight: bold;
-}

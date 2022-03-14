@@ -1,0 +1,57 @@
+using Gtk 4.0;
+using Adw 1;
+
+template ListRow: Gtk.ListBoxRow {
+    selectable: false;
+    Gtk.Box {
+        orientation: vertical;
+        Adw.ActionRow {
+            title: bind ListRow.name;
+            [suffix]
+            Gtk.Label {
+                label: bind ListRow.expire_label;
+            }
+            [suffix]
+            Gtk.ToggleButton {
+                icon-name: "document-edit-symbolic";
+                has-frame: false;
+                valign: center;
+                active: bind ListRow.editing;
+                clicked => on_edit_clicked();
+            }
+        }
+        Gtk.Revealer {
+            reveal-child: bind ListRow.editing;
+            Gtk.Box {
+                orientation: vertical;
+                margin-top: 12;
+                margin-bottom: 12;
+                margin-start: 12;
+                margin-end: 12;
+                spacing: 6;
+                Gtk.Label {
+                    label: "Name";
+                    styles [ "heading" ]
+                    justify: left;
+                    xalign: 0;
+                }
+                Gtk.Entry {
+                    text: bind ListRow.entry_name bidirectional;
+                }
+                Gtk.Label {
+                    label: "Expiration";
+                    styles [ "heading" ]
+                    justify: left;
+                    xalign: 0;
+                }
+                Gtk.Calendar expire_calendar {}
+                Gtk.Button {
+                    label: "Delete";
+                    styles [ "destructive-action" ]
+                    halign: end;
+                    clicked => on_delete_clicked();
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,29 @@
+using Gtk 4.0;
+using Adw 1;
+
+template MainWin: Adw.ApplicationWindow {
+    Gtk.Box {
+        orientation: vertical;
+        Adw.HeaderBar {
+            title-widget: Gtk.Label {
+                label: 'ExpMgr';
+            };
+            Gtk.Button {
+                icon-name: "list-add-symbolic";
+                clicked => on_add_clicked();
+            }
+        }
+        Gtk.ScrolledWindow {
+            vexpand: true;
+            Adw.Clamp {
+                Gtk.ListBox list_box {
+                    styles [ "content" ]
+                    margin-top: 12;
+                    margin-bottom: 12;
+                    margin-start: 12;
+                    margin-end: 12;
+                }
+            }
+        }
+    }
+}

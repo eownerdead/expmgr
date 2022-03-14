@@ -1,0 +1,25 @@
+#!@PYTHON@
+
+import os
+import sys
+import signal
+
+PKGDATADIR = '@PKGDATADIR@'
+
+sys.path.insert(1, '@PYTHONDIR@')
+signal.signal(signal.SIGINT, signal.SIG_DFL)
+
+if __name__ == '__main__':
+    import gi
+
+    gi.require_version('Adw', '1')
+    gi.require_version('Gio', '2.0')
+    gi.require_version('GLib', '2.0')
+    gi.require_version('Gtk', '4.0')
+
+    from gi.repository import Gio
+    res = Gio.Resource.load(os.path.join(PKGDATADIR, 'expmgr.gresource'))
+    res._register()
+
+    from expmgr.main import main
+    sys.exit(main())
