@@ -30,7 +30,7 @@ template ListRow: Gtk.ListBoxRow {
                 margin-end: 12;
                 spacing: 6;
                 Gtk.Label {
-                    label: "Name";
+                    label: _("Name");
                     styles [ "heading" ]
                     justify: left;
                     xalign: 0;
@@ -39,14 +39,14 @@ template ListRow: Gtk.ListBoxRow {
                     text: bind ListRow.entry_name bidirectional;
                 }
                 Gtk.Label {
-                    label: "Expiration";
+                    label: _("Expiration");
                     styles [ "heading" ]
                     justify: left;
                     xalign: 0;
                 }
                 Gtk.Calendar expire_calendar {}
                 Gtk.Button {
-                    label: "Delete";
+                    label: _("Delete");
                     styles [ "destructive-action" ]
                     halign: end;
                     clicked => on_delete_clicked();

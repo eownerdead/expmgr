@@ -1,4 +1,5 @@
 import typing as T
+from gettext import gettext as _
 from pathlib import Path
 
 import tomlkit
@@ -25,10 +26,10 @@ class MainWin(Adw.ApplicationWindow):
     def __init__(self, *args: T.Any, **kwargs: T.Any) -> None:
         super().__init__(*args, **kwargs)
 
-        self.box.append(ExpireGroup(label='Expired', label_style='error'))
+        self.box.append(ExpireGroup(label=_('Expired'), label_style='error'))
         for i in EXPIRE_GROUP_TBL:
             self.box.append(ExpireGroup(label=fmt_expire_group(i)))
-        self.box.append(ExpireGroup(label='Others'))
+        self.box.append(ExpireGroup(label=_('Others')))
 
     @Gtk.Template.Callback()  # type: ignore
     def on_add_clicked(self, w: Gtk.Button) -> None:
@@ -112,26 +113,27 @@ def expires_after(date: GLib.DateTime, after: str) -> bool:
 def fmt_expire_group(a: str) -> str:
     n = int(a[:-1])
 
+    # TODO: I18n support.
     if a.endswith('d'):
         if n == 0:
-            return 'Today'
+            return _('Today')
         elif n == 1:
-            return 'Tomorrow'
+            return _('Tomorrow')
         else:
-            return f'{n} days'
+            return _(f'{n} days')
     elif a.endswith('w'):
         if n == 1:
-            return 'Next week'
+            return _('Next week')
         else:
-            return f'{n} weeks'
+            return _(f'{n} weeks')
     elif a.endswith('m'):
         if n == 1:
-            return 'Next month'
+            return _('Next month')
         else:
-            return f'{n} months'
+            return _(f'{n} months')
     elif a.endswith('y'):
         if n == 1:
-            return 'Next year'
+            return _('Next year')
         else:
-            return f'{n} years'
+            return _(f'{n} years')
     raise Exception('Invalid expire group format')

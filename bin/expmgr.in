@@ -3,11 +3,19 @@
 import os
 import sys
 import signal
+import gettext
+import locale
 
 PKGDATADIR = '@PKGDATADIR@'
 
 sys.path.insert(1, '@PYTHONDIR@')
 signal.signal(signal.SIGINT, signal.SIG_DFL)
+
+locale.bindtextdomain('expmgr', '@LOCALEDIR@')
+locale.textdomain('expmgr')
+
+gettext.bindtextdomain('expmgr', '@LOCALEDIR@')
+gettext.textdomain('expmgr')
 
 if __name__ == '__main__':
     import gi
