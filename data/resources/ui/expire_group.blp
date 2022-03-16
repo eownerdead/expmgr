@@ -1,0 +1,15 @@
+using Gtk 4.0;
+using Adw 1;
+
+template ExpireGroup: Gtk.Box {
+    orientation: vertical;
+    spacing: 12;
+    Gtk.Label {
+        styles [ "heading" ]
+        label: bind ExpireGroup.label;
+        xalign: 0;
+    }
+    Gtk.ListBox list_box {
+        styles [ "content" ]
+    }
+}

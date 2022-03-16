@@ -24,12 +24,22 @@ class ListRow(Gtk.ListBoxRow):
         return self._expire
 
     @expire.setter  # type: ignore
-    def expire(self, v: GLib.DateTime):
+    def expire(self, v: GLib.DateTime) -> None:
         self._expire = v
+        # TODO: Do not padding with zero
         self.expire_label = self.expire.format('%x')
 
     expire_label = GObject.Property(type=str)  # type: ignore
-    editing = GObject.Property(type=bool, default=False)  # type: ignore
+
+    @GObject.Property(type=bool, default=False)
+    def editing(self) -> bool:
+        return self._editing
+
+    @editing.setter  # type: ignore
+    def editing(self, v: bool) -> None:
+        self._editing = v
+        if not self._editing:
+            self.changed()
 
     @Gtk.Template.Callback()  # type: ignore
     def on_edit_clicked(self, w: Gtk.ToggleButton) -> None:

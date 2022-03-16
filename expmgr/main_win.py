@@ -5,11 +5,14 @@ import tomlkit
 from gi.repository import Adw, GLib, Gtk
 from tomlkit.toml_file import TOMLFile
 
+from expmgr.expire_group import ExpireGroup
 from expmgr.list_row import ListRow
 
 DATA_PATH = Path(GLib.get_user_data_dir()).joinpath('expmgr/data.toml')
 
 data_file = TOMLFile(str(DATA_PATH))
+
+EXPIRE_GROUP_TBL = ['0d', '1d', '2d', '3d', '1w', '2w', '1m', '3m', '6m', '1y']
 
 
 @Gtk.Template(resource_path='/com/example/expmgr/ui/main_win.ui'
@@ -17,10 +20,15 @@ data_file = TOMLFile(str(DATA_PATH))
 class MainWin(Adw.ApplicationWindow):
     __gtype_name__ = 'MainWin'
 
-    list_box: ListRow = Gtk.Template.Child()
+    box = Gtk.Template.Child()
 
     def __init__(self, *args: T.Any, **kwargs: T.Any) -> None:
         super().__init__(*args, **kwargs)
+
+        self.box.append(ExpireGroup(label='Expired', label_style='error'))
+        for i in EXPIRE_GROUP_TBL:
+            self.box.append(ExpireGroup(label=fmt_expire_group(i)))
+        self.box.append(ExpireGroup(label='Others'))
 
     @Gtk.Template.Callback()  # type: ignore
     def on_add_clicked(self, w: Gtk.Button) -> None:
@@ -37,7 +45,7 @@ class MainWin(Adw.ApplicationWindow):
             w.editing = True
 
     def on_list_row_delete_clicked(self, w: ListRow) -> None:
-        self.list_box.remove(w)
+        w.get_parent().remove(w)
 
     def load_db(self) -> None:
         for name, v in data_file.read().items():
@@ -52,10 +60,11 @@ class MainWin(Adw.ApplicationWindow):
     def save_db(self) -> None:
         doc = tomlkit.document()
 
-        for i in self.list_box:
-            t = tomlkit.inline_table()
-            t.append('expire', tomlkit.date(i.expire.format(r'%Y-%m-%d')))
-            doc.add(i.name, t)
+        for group in self.box:
+            for i in group.list_box:
+                t = tomlkit.inline_table()
+                t.append('expire', tomlkit.date(i.expire.format(r'%Y-%m-%d')))
+                doc.add(i.name, t)
         doc.add(tomlkit.nl())
 
         data_file.write(doc)
@@ -67,11 +76,62 @@ class MainWin(Adw.ApplicationWindow):
         lr = ListRow(name=name, expire=expire, editing=editing)
         lr.connect('edit_clicked', self.on_list_row_edit_clicked)
         lr.connect('delete_clicked', self.on_list_row_delete_clicked)
-        self.list_box.append(lr)
+
+        for i, group in zip(
+            ['-1d'] + EXPIRE_GROUP_TBL + [None],  # type: ignore
+                self.box):
+            if i is None or expires_after(lr.expire, i):
+                group.append(lr)
+                return
 
     # Must be one ListRow being edited.
     def close_editing(self) -> None:
-        for i in self.list_box:
-            if i.editing:
-                i.editing = False
-                break
+        for group in self.box:
+            for list_box in group.list_box:
+                if list_box.editing:
+                    list_box.editing = False
+                    return
+
+
+def expires_after(date: GLib.DateTime, after: str) -> bool:
+    now = GLib.DateTime.new_now_local()
+
+    n = int(after[:-1])
+    if after.endswith('d'):
+        b = now.add_days(n)
+    elif after.endswith('w'):
+        b = now.add_weeks(n)
+    elif after.endswith('m'):
+        b = now.add_months(n)
+    elif after.endswith('y'):
+        b = now.add_years(n)
+
+    return date.compare(b) == -1
+
+
+def fmt_expire_group(a: str) -> str:
+    n = int(a[:-1])
+
+    if a.endswith('d'):
+        if n == 0:
+            return 'Today'
+        elif n == 1:
+            return 'Tomorrow'
+        else:
+            return f'{n} days'
+    elif a.endswith('w'):
+        if n == 1:
+            return 'Next week'
+        else:
+            return f'{n} weeks'
+    elif a.endswith('m'):
+        if n == 1:
+            return 'Next month'
+        else:
+            return f'{n} months'
+    elif a.endswith('y'):
+        if n == 1:
+            return 'Next year'
+        else:
+            return f'{n} years'
+    raise Exception('Invalid expire group format')
