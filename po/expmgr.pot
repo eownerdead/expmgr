@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: expmgr\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-03-18 23:46+0900\n"
+"POT-Creation-Date: 2022-03-18 23:49+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: data/resources/ui/list_row.blp:33
+#: data/resources/ui/list_row.blp:33 data/resources/ui/main_win.blp:25
 msgid "Name"
 msgstr ""
 
@@ -29,50 +29,58 @@ msgstr ""
 msgid "Delete"
 msgstr ""
 
-#: expmgr/main_win.py:29
+#: data/resources/ui/main_win.blp:41
+msgid "Add"
+msgstr ""
+
+#: expmgr/list_view.py:25
 msgid "Expired"
 msgstr ""
 
-#: expmgr/main_win.py:32
+#: expmgr/list_view.py:28
 msgid "Others"
 msgstr ""
 
-#: expmgr/main_win.py:119
+#: expmgr/list_view.py:116
 msgid "Today"
 msgstr ""
 
-#: expmgr/main_win.py:121
+#: expmgr/list_view.py:118
 msgid "Tomorrow"
 msgstr ""
 
-#: expmgr/main_win.py:123
+#: expmgr/list_view.py:120
 #, python-brace-format
 msgid "{n} days"
 msgstr ""
 
-#: expmgr/main_win.py:126
+#: expmgr/list_view.py:123
 msgid "Next week"
 msgstr ""
 
-#: expmgr/main_win.py:128
+#: expmgr/list_view.py:125
 #, python-brace-format
 msgid "{n} weeks"
 msgstr ""
 
-#: expmgr/main_win.py:131
+#: expmgr/list_view.py:128
 msgid "Next month"
 msgstr ""
 
-#: expmgr/main_win.py:133
+#: expmgr/list_view.py:130
 #, python-brace-format
 msgid "{n} months"
 msgstr ""
 
-#: expmgr/main_win.py:136
+#: expmgr/list_view.py:133
 msgid "Next year"
 msgstr ""
 
-#: expmgr/main_win.py:138
+#: expmgr/list_view.py:135
 #, python-brace-format
 msgid "{n} years"
+msgstr ""
+
+#: expmgr/main_win.py:54
+msgid "A list with that name already exists."
 msgstr ""

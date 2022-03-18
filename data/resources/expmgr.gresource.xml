@@ -2,6 +2,7 @@
 <gresources>
     <gresource prefix="/com/example/expmgr/">
         <file preprocess="xml-stripblanks">ui/main_win.ui</file>
+        <file preprocess="xml-stripblanks">ui/list_view.ui</file>
         <file preprocess="xml-stripblanks">ui/expire_group.ui</file>
         <file preprocess="xml-stripblanks">ui/list_row.ui</file>
     </gresource>

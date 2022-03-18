@@ -13,11 +13,10 @@ class App(Adw.Application):
 
     def on_activate(self, app: Adw.Application) -> None:
         self.win = MainWin(application=self)
-        self.win.load_db()
         self.win.present()
 
     def on_shutdown(self, app: Adw.Application) -> None:
-        self.win.save_db()
+        self.win.on_quit(app)
 
 
 def main() -> int:

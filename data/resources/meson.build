@@ -1,6 +1,7 @@
 blueprints = custom_target('blueprints',
     input: [
         'ui/main_win.blp',
+        'ui/list_view.blp',
         'ui/expire_group.blp',
         'ui/list_row.blp'
     ],

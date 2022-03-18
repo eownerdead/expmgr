@@ -2,18 +2,12 @@ import typing as T
 from gettext import gettext as _
 from pathlib import Path
 
-import tomlkit
-from gi.repository import Adw, GLib, Gtk
+from gi.repository import Adw, GLib, GObject, Gtk
 from tomlkit.toml_file import TOMLFile
 
-from expmgr.expire_group import ExpireGroup
-from expmgr.list_row import ListRow
+from expmgr.list_view import ListView
 
-DATA_PATH = Path(GLib.get_user_data_dir()).joinpath('expmgr/data.toml')
-
-data_file = TOMLFile(str(DATA_PATH))
-
-EXPIRE_GROUP_TBL = ['0d', '1d', '2d', '3d', '1w', '2w', '1m', '3m', '6m', '1y']
+DATA_DIR = Path(GLib.get_user_data_dir()).joinpath('expmgr/')
 
 
 @Gtk.Template(resource_path='/com/example/expmgr/ui/main_win.ui'
@@ -21,119 +15,68 @@ EXPIRE_GROUP_TBL = ['0d', '1d', '2d', '3d', '1w', '2w', '1m', '3m', '6m', '1y']
 class MainWin(Adw.ApplicationWindow):
     __gtype_name__ = 'MainWin'
 
-    box = Gtk.Template.Child()
+    leaflet = Gtk.Template.Child()
+    sidebar = Gtk.Template.Child()
+    stack = Gtk.Template.Child()
+    new_list_popover = Gtk.Template.Child()
+    new_list_name_entry = Gtk.Template.Child()
+
+    new_list_popover_message_revealing: bool = GObject.Property(
+        type=bool, default=False)  # type: ignore
+    new_list_popover_message: str = GObject.Property(type=str)  # type: ignore
+    new_list_popover_can_add: bool = GObject.Property(
+        type=bool, default=False)  # type: ignore
 
     def __init__(self, *args: T.Any, **kwargs: T.Any) -> None:
         super().__init__(*args, **kwargs)
 
-        self.box.append(ExpireGroup(label=_('Expired'), label_style='error'))
-        for i in EXPIRE_GROUP_TBL:
-            self.box.append(ExpireGroup(label=fmt_expire_group(i)))
-        self.box.append(ExpireGroup(label=_('Others')))
+        for i in DATA_DIR.glob('*.toml'):
+            self.add_list(i.stem)
 
     @Gtk.Template.Callback()  # type: ignore
-    def on_add_clicked(self, w: Gtk.Button) -> None:
-        self.close_editing()
-        self.add_list_row(name='',
-                          expire=GLib.DateTime.new_now_local(),
-                          editing=True)
+    def on_stack_notify_visible_child(self, w: Gtk.Stack,
+                                      user_data: T.Any) -> None:
+        self.leaflet.navigate(Adw.NavigationDirection.FORWARD)
 
-    def on_list_row_edit_clicked(self, w: ListRow) -> None:
-        if w.editing:
-            w.editing = False
+    @Gtk.Template.Callback()  # type: ignore
+    def on_add_list_clicked(self, w: Gtk.Button) -> None:
+        self.add_new_list(self.new_list_name_entry.get_text())
+        self.new_list_popover.popdown()
+
+    @Gtk.Template.Callback()  # type: ignore
+    def on_new_list_name_entry_changed(self, w: Gtk.Entry) -> None:
+        if not w.get_text():
+            self.new_list_popover_can_add = False
+            self.new_list_popover_message_showing = False
+        elif data_file_path(w.get_text()).exists():
+            self.new_list_popover_can_add = False
+            self.new_list_popover_message = _(
+                'A list with that name already exists.')
+            self.new_list_popover_message_revealing = True
         else:
-            self.close_editing()
-            w.editing = True
+            self.new_list_popover_can_add = True
+            self.new_list_popover_message_revealing = False
 
-    def on_list_row_delete_clicked(self, w: ListRow) -> None:
-        w.get_parent().remove(w)
+    @Gtk.Template.Callback()  # type: ignore
+    def on_go_previous_clicked(self, w: Gtk.Button) -> None:
+        self.leaflet.navigate(Adw.NavigationDirection.BACK)
 
-    def load_db(self) -> None:
-        for name, v in data_file.read().items():
-            expire = GLib.DateTime.new_local(v['expire'].year,
-                                             v['expire'].month,
-                                             v['expire'].day,
-                                             hour=0,
-                                             minute=0,
-                                             seconds=0)
-            self.add_list_row(name, expire)
+    @Gtk.Template.Callback()  # type: ignore
+    def on_add_item_clicked(self, w: Gtk.Button) -> None:
+        self.stack.get_visible_child().on_add_clicked()
 
-    def save_db(self) -> None:
-        doc = tomlkit.document()
+    def on_quit(self, app: Adw.Application) -> None:
+        for i in self.stack:
+            i.save_db()
 
-        for group in self.box:
-            for i in group.list_box:
-                t = tomlkit.inline_table()
-                t.append('expire', tomlkit.date(i.expire.format(r'%Y-%m-%d')))
-                doc.add(i.name, t)
-        doc.add(tomlkit.nl())
+    def add_list(self, name: str) -> None:
+        f = TOMLFile(str(data_file_path(name)))
+        self.stack.add_titled(ListView(file=f), None, name)
 
-        data_file.write(doc)
-
-    def add_list_row(self,
-                     name: str,
-                     expire: GLib.DateTime,
-                     editing: bool = False) -> None:
-        lr = ListRow(name=name, expire=expire, editing=editing)
-        lr.connect('edit_clicked', self.on_list_row_edit_clicked)
-        lr.connect('delete_clicked', self.on_list_row_delete_clicked)
-
-        for i, group in zip(
-            ['-1d'] + EXPIRE_GROUP_TBL + [None],  # type: ignore
-                self.box):
-            if i is None or expires_after(lr.expire, i):
-                group.append(lr)
-                return
-
-    # Must be one ListRow being edited.
-    def close_editing(self) -> None:
-        for group in self.box:
-            for list_box in group.list_box:
-                if list_box.editing:
-                    list_box.editing = False
-                    return
+    def add_new_list(self, name: str) -> None:
+        data_file_path(name).touch()
+        self.add_list(name)
 
 
-def expires_after(date: GLib.DateTime, after: str) -> bool:
-    now = GLib.DateTime.new_now_local()
-
-    n = int(after[:-1])
-    if after.endswith('d'):
-        b = now.add_days(n)
-    elif after.endswith('w'):
-        b = now.add_weeks(n)
-    elif after.endswith('m'):
-        b = now.add_months(n)
-    elif after.endswith('y'):
-        b = now.add_years(n)
-
-    return date.compare(b) == -1
-
-
-def fmt_expire_group(a: str) -> str:
-    n = int(a[:-1])
-
-    # TODO: I18n support.
-    if a.endswith('d'):
-        if n == 0:
-            return _('Today')
-        elif n == 1:
-            return _('Tomorrow')
-        else:
-            return _(f'{n} days')
-    elif a.endswith('w'):
-        if n == 1:
-            return _('Next week')
-        else:
-            return _(f'{n} weeks')
-    elif a.endswith('m'):
-        if n == 1:
-            return _('Next month')
-        else:
-            return _(f'{n} months')
-    elif a.endswith('y'):
-        if n == 1:
-            return _('Next year')
-        else:
-            return _(f'{n} years')
-    raise Exception('Invalid expire group format')
+def data_file_path(name: str) -> Path:
+    return DATA_DIR.joinpath(name).with_suffix('.toml')

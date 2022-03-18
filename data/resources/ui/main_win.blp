@@ -2,28 +2,77 @@ using Gtk 4.0;
 using Adw 1;
 
 template MainWin: Adw.ApplicationWindow {
-    Gtk.Box {
-        orientation: vertical;
-        Adw.HeaderBar {
-            title-widget: Gtk.Label {
-                label: 'ExpMgr';
-            };
-            Gtk.Button {
-                icon-name: "list-add-symbolic";
-                clicked => on_add_clicked();
+    Adw.Leaflet leaflet {
+        Gtk.Box {
+            orientation: vertical;
+            Adw.HeaderBar {
+                show-end-title-buttons: bind leaflet.folded;
+                title-widget: Gtk.Label {
+                    label: "ExpMgr";
+                };
+                Gtk.MenuButton {
+                    icon-name: "list-add-symbolic";
+                    popover: Gtk.Popover new_list_popover {
+                        Gtk.Box {
+                            orientation: vertical;
+                            margin-top: 3;
+                            margin-bottom: 3;
+                            margin-start: 3;
+                            margin-end: 3;
+                            spacing: 9;
+                            width-request: 260;
+                            Gtk.Label {
+                                label: _("Name");
+                                styles ["heading"]
+                                xalign: 0;
+                            }
+                            Gtk.Entry new_list_name_entry {
+                                changed => on_new_list_name_entry_changed();
+                            }
+                            Gtk.Revealer {
+                                reveal-child: bind
+                                    MainWin.new_list_popover_message_revealing;
+                                Gtk.Label {
+                                    label:
+                                        bind MainWin.new_list_popover_message;
+                                }
+                            }
+                            Gtk.Button {
+                                label: _("Add");
+                                styles ["suggested-action"]
+                                halign: end;
+                                sensitive:
+                                    bind MainWin.new_list_popover_can_add;
+                                clicked => on_add_list_clicked();
+                            }
+                        }
+                    };
+                }
+            }
+            Gtk.StackSidebar sidebar {
+                vexpand: true;
+                width-request: 200;
+                stack: stack;
             }
         }
-        Gtk.ScrolledWindow {
-            vexpand: true;
-            Adw.Clamp {
-                Gtk.Box box {
-                    orientation: vertical;
-                    margin-top: 12;
-                    margin-bottom: 12;
-                    margin-start: 12;
-                    margin-end: 12;
-                    spacing: 24;
+        Gtk.Box {
+            orientation: vertical;
+            hexpand: true;
+            Adw.HeaderBar {
+                show-start-title-buttons: bind leaflet.folded;
+                title-widget: Gtk.Box {};
+                Gtk.Button {
+                    visible: bind leaflet.folded;
+                    icon-name: "go-previous-symbolic";
+                    clicked => on_go_previous_clicked();
                 }
+                Gtk.Button {
+                    icon-name: "list-add-symbolic";
+                    clicked => on_add_item_clicked();
+                }
+            }
+            Gtk.Stack stack {
+                notify::visible-child => on_stack_notify_visible_child();
             }
         }
     }
