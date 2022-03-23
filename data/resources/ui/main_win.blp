@@ -71,10 +71,19 @@ template MainWin: Adw.ApplicationWindow {
                     icon-name: "list-add-symbolic";
                     clicked => on_add_item_clicked();
                 }
+                [end]
+                Gtk.MenuButton {
+                    icon-name: "open-menu-symbolic";
+                    menu-model: primary_menu;
+                }
             }
             Gtk.Stack stack {
                 notify::visible-child => on_stack_notify_visible_child();
             }
         }
     }
+}
+
+menu primary_menu {
+    item (_("About ExpMgr"), "app.about")
 }

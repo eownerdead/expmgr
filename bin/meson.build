@@ -1,6 +1,7 @@
 conf = configuration_data()
 conf.set('PYTHON', python.find_installation('python3').path())
 conf.set('PYTHONDIR', pythondir)
+conf.set('VERSION', meson.project_version())
 conf.set('LOCALEDIR', join_paths(prefix, localedir))
 conf.set('PKGDATADIR', pkgdatadir)
 
