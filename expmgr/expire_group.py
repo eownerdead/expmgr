@@ -2,6 +2,8 @@ import typing as T
 
 from gi.repository import GObject, Gtk
 
+from expmgr.list_row import ListRow
+
 
 @Gtk.Template(resource_path='/com/example/expmgr/ui/expire_group.ui'
               )  # type: ignore
@@ -21,8 +23,21 @@ class ExpireGroup(Gtk.Box):
 
         if label_style is not None:
             self.add_css_class(label_style)
-        self.set_visible(False)
 
-    def append(self, child: Gtk.Widget) -> None:
+        self.update()
+
+    @GObject.Signal()  # type: ignore
+    def changed(self) -> None:
+        pass
+
+    def update(self) -> None:
+        has_child = self.list_box.get_first_child() is not None
+        self.set_visible(has_child)
+
+    def append(self, child: ListRow) -> None:
+        child.connect('changed', lambda _: self.emit('changed'))
         self.list_box.append(child)
-        self.set_visible(True)
+
+    def remove(self, child: ListRow) -> None:
+        self.list_box.remove(child)
+        self.update()

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: expmgr\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-03-18 23:49+0900\n"
+"POT-Creation-Date: 2022-03-19 00:15+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -41,42 +41,42 @@ msgstr ""
 msgid "Others"
 msgstr ""
 
-#: expmgr/list_view.py:116
+#: expmgr/list_view.py:124
 msgid "Today"
 msgstr ""
 
-#: expmgr/list_view.py:118
+#: expmgr/list_view.py:126
 msgid "Tomorrow"
 msgstr ""
 
-#: expmgr/list_view.py:120
+#: expmgr/list_view.py:128
 #, python-brace-format
 msgid "{n} days"
 msgstr ""
 
-#: expmgr/list_view.py:123
+#: expmgr/list_view.py:131
 msgid "Next week"
 msgstr ""
 
-#: expmgr/list_view.py:125
+#: expmgr/list_view.py:133
 #, python-brace-format
 msgid "{n} weeks"
 msgstr ""
 
-#: expmgr/list_view.py:128
+#: expmgr/list_view.py:136
 msgid "Next month"
 msgstr ""
 
-#: expmgr/list_view.py:130
+#: expmgr/list_view.py:138
 #, python-brace-format
 msgid "{n} months"
 msgstr ""
 
-#: expmgr/list_view.py:133
+#: expmgr/list_view.py:141
 msgid "Next year"
 msgstr ""
 
-#: expmgr/list_view.py:135
+#: expmgr/list_view.py:143
 #, python-brace-format
 msgid "{n} years"
 msgstr ""

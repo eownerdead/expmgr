@@ -7,6 +7,10 @@ class ListRow(Gtk.ListBoxRow):
     __gtype_name__ = 'ListRow'
 
     @GObject.Signal()  # type: ignore
+    def changed(self) -> None:
+        pass
+
+    @GObject.Signal()  # type: ignore
     def edit_clicked(self) -> None:
         pass
 
@@ -40,6 +44,7 @@ class ListRow(Gtk.ListBoxRow):
         self._editing = v
         if not self._editing:
             self.changed()
+            self.emit('changed')
 
     @Gtk.Template.Callback()  # type: ignore
     def on_edit_clicked(self, w: Gtk.ToggleButton) -> None:

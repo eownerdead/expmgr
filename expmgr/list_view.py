@@ -22,10 +22,11 @@ class ListView(Gtk.ScrolledWindow):
         super().__init__(*args, **kwargs)
 
         self.file = file
-        self.box.append(ExpireGroup(label=_('Expired'), label_style='error'))
+
+        self.add_group(_('Expired'), label_style='error')
         for i in EXPIRE_GROUP_TBL:
-            self.box.append(ExpireGroup(label=fmt_expire_group(i)))
-        self.box.append(ExpireGroup(label=_('Others')))
+            self.add_group(name=fmt_expire_group(i))
+        self.add_group(name=_('Others'))
 
         self.load_db()
 
@@ -34,6 +35,12 @@ class ListView(Gtk.ScrolledWindow):
         self.add_list_row(name='',
                           expire=GLib.DateTime.new_now_local(),
                           editing=True)
+
+    def on_group_changed(self, w: ExpireGroup) -> None:
+        for lr in w.list_box:
+            w.remove(lr)
+            self.insert_list_row(lr)
+            w.update()
 
     def on_list_row_edit_clicked(self, w: ListRow) -> None:
         if w.editing:
@@ -67,19 +74,30 @@ class ListView(Gtk.ScrolledWindow):
 
         self.file.write(doc)
 
+    def add_group(self, name: str, label_style: str = None) -> None:
+        g = ExpireGroup(label=name, label_style=label_style)
+        g.connect('changed', self.on_group_changed)
+        self.box.append(g)
+
     def add_list_row(self,
                      name: str,
                      expire: GLib.DateTime,
                      editing: bool = False) -> None:
         lr = ListRow(name=name, expire=expire, editing=editing)
+
         lr.connect('edit_clicked', self.on_list_row_edit_clicked)
         lr.connect('delete_clicked', self.on_list_row_delete_clicked)
 
+        self.insert_list_row(lr)
+
+    # Insert ListRow into the matching expiry group.
+    def insert_list_row(self, list_row: ListRow) -> None:
         for i, group in zip(
             ['-1d'] + EXPIRE_GROUP_TBL + [None],  # type: ignore
                 self.box):
-            if i is None or expires_after(lr.expire, i):
-                group.append(lr)
+            if i is None or expires_after(list_row.expire, i):
+                group.append(list_row)
+                group.update()
                 return
 
     # Must be one ListRow being edited.
