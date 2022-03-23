@@ -29,5 +29,12 @@ if __name__ == '__main__':
     res = Gio.Resource.load(os.path.join(PKGDATADIR, 'expmgr.gresource'))
     res._register()
 
+    try:
+        from typeguard.importhook import install_import_hook
+    except ImportError:
+        pass
+    else:
+        install_import_hook('expmgr')
+
     from expmgr.main import main
     sys.exit(main())
