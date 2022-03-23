@@ -5,5 +5,6 @@
         <file preprocess="xml-stripblanks">ui/list_view.ui</file>
         <file preprocess="xml-stripblanks">ui/expire_group.ui</file>
         <file preprocess="xml-stripblanks">ui/list_row.ui</file>
+        <file preprocess="xml-stripblanks">ui/shortcuts_win.ui</file>
     </gresource>
 </gresources>

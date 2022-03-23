@@ -6,6 +6,7 @@ from gi.repository import Adw, Gio, GLib, GObject, Gtk
 from tomlkit.toml_file import TOMLFile
 
 from expmgr.list_view import ListView
+from expmgr.shortcuts_win import ShortcutsWin
 
 DATA_DIR = Path(GLib.get_user_data_dir()).joinpath('expmgr/')
 
@@ -30,6 +31,8 @@ class MainWin(Adw.ApplicationWindow):
 
     def __init__(self, *args: T.Any, **kwargs: T.Any) -> None:
         super().__init__(*args, **kwargs)
+
+        self.set_help_overlay(ShortcutsWin())
 
         add_list = Gio.SimpleAction.new('add_list', None)
         add_list.connect('activate',

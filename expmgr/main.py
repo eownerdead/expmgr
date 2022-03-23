@@ -27,6 +27,8 @@ class App(Adw.Application):
         self.set_accels_for_action('win.add_list', ['<Primary><Shift>n'])
         self.set_accels_for_action('win.add_item', ['<Primary>n'])
         self.set_accels_for_action('win.open_menu', ['F10'])
+        self.set_accels_for_action(
+            'win.show-help-overlay', ['<Primary>question'])
         self.set_accels_for_action('app.quit', ['<Primary>q'])
 
     def on_activate(self, app: Adw.Application) -> None:

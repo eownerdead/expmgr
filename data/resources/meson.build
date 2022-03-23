@@ -3,7 +3,8 @@ blueprints = custom_target('blueprints',
         'ui/main_win.blp',
         'ui/list_view.blp',
         'ui/expire_group.blp',
-        'ui/list_row.blp'
+        'ui/list_row.blp',
+        'ui/shortcuts_win.blp'
     ],
     output: '.',
     command: [

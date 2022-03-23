@@ -2,8 +2,10 @@ data/resources/ui/expire_group.blp
 data/resources/ui/list_row.blp
 data/resources/ui/list_view.blp
 data/resources/ui/main_win.blp
+data/resources/ui/shortcuts_win.blp
 expmgr/expire_group.py
 expmgr/list_row.py
 expmgr/list_view.py
 expmgr/main.py
 expmgr/main_win.py
+expmgr/shortcuts_win.py

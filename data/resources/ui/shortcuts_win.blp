@@ -1,0 +1,33 @@
+using Gtk 4.0;
+
+template ShortcutsWin: Gtk.ShortcutsWindow {
+    modal: true;
+    Gtk.ShortcutsSection {
+        Gtk.ShortcutsGroup {
+            title: _("General");
+            Gtk.ShortcutsShortcut {
+                title: _("Quit");
+                action-name: "app.quit";
+            }
+            Gtk.ShortcutsShortcut {
+                title: _("Open menu");
+                action-name: "win.open_menu";
+            }
+            Gtk.ShortcutsShortcut {
+                title: _("Keyboard Shortcuts");
+                action-name: "win.show-help-overlay";
+            }
+        }
+        Gtk.ShortcutsGroup {
+            title: _("Editing");
+            Gtk.ShortcutsShortcut {
+                title: _("Create a new item");
+                action-name: "win.add_item";
+            }
+            Gtk.ShortcutsShortcut {
+                title: _("Create a new list");
+                action-name: "win.add_list";
+            }
+        }
+    }
+}
