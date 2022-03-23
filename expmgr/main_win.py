@@ -2,7 +2,7 @@ import typing as T
 from gettext import gettext as _
 from pathlib import Path
 
-from gi.repository import Adw, GLib, GObject, Gtk
+from gi.repository import Adw, Gio, GLib, GObject, Gtk
 from tomlkit.toml_file import TOMLFile
 
 from expmgr.list_view import ListView
@@ -20,6 +20,7 @@ class MainWin(Adw.ApplicationWindow):
     stack = Gtk.Template.Child()
     new_list_popover = Gtk.Template.Child()
     new_list_name_entry = Gtk.Template.Child()
+    menu = Gtk.Template.Child()
 
     new_list_popover_message_revealing: bool = GObject.Property(
         type=bool, default=False)  # type: ignore
@@ -29,6 +30,19 @@ class MainWin(Adw.ApplicationWindow):
 
     def __init__(self, *args: T.Any, **kwargs: T.Any) -> None:
         super().__init__(*args, **kwargs)
+
+        add_list = Gio.SimpleAction.new('add_list', None)
+        add_list.connect('activate',
+                         lambda action, data: self.new_list_popover.popup())
+        self.add_action(add_list)
+
+        add_item = Gio.SimpleAction.new('add_item', None)
+        add_item.connect('activate', lambda action, data: self.add_item())
+        self.add_action(add_item)
+
+        open_menu = Gio.SimpleAction.new('open_menu', None)
+        open_menu.connect('activate', lambda action, data: self.menu.popup())
+        self.add_action(open_menu)
 
         for i in DATA_DIR.glob('*.toml'):
             self.add_list(i.stem)
@@ -63,7 +77,7 @@ class MainWin(Adw.ApplicationWindow):
 
     @Gtk.Template.Callback()  # type: ignore
     def on_add_item_clicked(self, w: Gtk.Button) -> None:
-        self.stack.get_visible_child().on_add_clicked()
+        self.add_item()
 
     def on_quit(self, app: Adw.Application) -> None:
         for i in self.stack:
@@ -76,6 +90,9 @@ class MainWin(Adw.ApplicationWindow):
     def add_new_list(self, name: str) -> None:
         data_file_path(name).touch()
         self.add_list(name)
+
+    def add_item(self) -> None:
+        self.stack.get_visible_child().on_add_clicked()
 
 
 def data_file_path(name: str) -> Path:

@@ -20,6 +20,15 @@ class App(Adw.Application):
         about.connect('activate', self.on_about)
         self.add_action(about)
 
+        quit_ = Gio.SimpleAction.new('quit', None)
+        quit_.connect('activate', lambda action, data: self.quit())
+        self.add_action(quit_)
+
+        self.set_accels_for_action('win.add_list', ['<Primary><Shift>n'])
+        self.set_accels_for_action('win.add_item', ['<Primary>n'])
+        self.set_accels_for_action('win.open_menu', ['F10'])
+        self.set_accels_for_action('app.quit', ['<Primary>q'])
+
     def on_activate(self, app: Adw.Application) -> None:
         self.win = MainWin(application=self)
         self.win.present()
