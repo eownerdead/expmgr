@@ -9,6 +9,7 @@ template MainWin: Adw.ApplicationWindow {
                 show-end-title-buttons: bind leaflet.folded;
                 title-widget: Gtk.Label {
                     label: "ExpMgr";
+                    styles ["title"]
                 };
                 Gtk.MenuButton {
                     icon-name: "list-add-symbolic";
