@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: expmgr\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-03-19 00:15+0900\n"
+"POT-Creation-Date: 2022-03-24 03:50+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: data/resources/ui/list_row.blp:33 data/resources/ui/main_win.blp:25
+#: data/resources/ui/list_row.blp:33 data/resources/ui/main_win.blp:26
 msgid "Name"
 msgstr ""
 
@@ -29,58 +29,94 @@ msgstr ""
 msgid "Delete"
 msgstr ""
 
-#: data/resources/ui/main_win.blp:41
+#: data/resources/ui/main_win.blp:42
 msgid "Add"
 msgstr ""
 
-#: expmgr/list_view.py:25
+#: data/resources/ui/main_win.blp:88
+msgid "About ExpMgr"
+msgstr ""
+
+#: data/resources/ui/main_win.blp:89 data/resources/ui/shortcuts_win.blp:17
+msgid "Keyboard Shortcuts"
+msgstr ""
+
+#: data/resources/ui/shortcuts_win.blp:7
+msgid "General"
+msgstr ""
+
+#: data/resources/ui/shortcuts_win.blp:9
+msgid "Quit"
+msgstr ""
+
+#: data/resources/ui/shortcuts_win.blp:13
+msgid "Open menu"
+msgstr ""
+
+#: data/resources/ui/shortcuts_win.blp:22
+msgid "Editing"
+msgstr ""
+
+#: data/resources/ui/shortcuts_win.blp:24
+msgid "Create a new item"
+msgstr ""
+
+#: data/resources/ui/shortcuts_win.blp:28
+msgid "Create a new list"
+msgstr ""
+
+#: expmgr/list_view.py:26
 msgid "Expired"
 msgstr ""
 
-#: expmgr/list_view.py:28
+#: expmgr/list_view.py:29
 msgid "Others"
 msgstr ""
 
-#: expmgr/list_view.py:124
+#: expmgr/list_view.py:134
 msgid "Today"
 msgstr ""
 
-#: expmgr/list_view.py:126
-msgid "Tomorrow"
-msgstr ""
-
-#: expmgr/list_view.py:128
-#, python-brace-format
-msgid "{n} days"
-msgstr ""
-
-#: expmgr/list_view.py:131
-msgid "Next week"
-msgstr ""
-
-#: expmgr/list_view.py:133
-#, python-brace-format
-msgid "{n} weeks"
-msgstr ""
-
 #: expmgr/list_view.py:136
-msgid "Next month"
+msgid "Tomorrow"
 msgstr ""
 
 #: expmgr/list_view.py:138
 #, python-brace-format
-msgid "{n} months"
+msgid "{n} days"
 msgstr ""
 
 #: expmgr/list_view.py:141
-msgid "Next year"
+msgid "Next week"
 msgstr ""
 
 #: expmgr/list_view.py:143
 #, python-brace-format
+msgid "{n} weeks"
+msgstr ""
+
+#: expmgr/list_view.py:146
+msgid "Next month"
+msgstr ""
+
+#: expmgr/list_view.py:148
+#, python-brace-format
+msgid "{n} months"
+msgstr ""
+
+#: expmgr/list_view.py:151
+msgid "Next year"
+msgstr ""
+
+#: expmgr/list_view.py:153
+#, python-brace-format
 msgid "{n} years"
 msgstr ""
 
-#: expmgr/main_win.py:54
+#: expmgr/main.py:47
+msgid "Manage expiry dates"
+msgstr ""
+
+#: expmgr/main_win.py:71
 msgid "A list with that name already exists."
 msgstr ""
