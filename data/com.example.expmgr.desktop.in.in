@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=ExpMgr
+Comment=Manage expiry dates
+Icon=@ICON@
+Exec=expmgr
+Terminal=false
+Categories=Calendar;ProjectManagement;GNOME;GTK;
+StartupNotify=true

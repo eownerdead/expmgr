@@ -8,9 +8,10 @@ from expmgr.main_win import MainWin  # noqa: E402
 
 
 class App(Adw.Application):
-    def __init__(self, ver: str) -> None:
-        super().__init__()
+    def __init__(self, app_id: str, ver: str) -> None:
+        super().__init__(application_id=app_id)
 
+        self.app_id = app_id
         self.ver = ver
 
         self.connect('activate', self.on_activate)
@@ -45,9 +46,10 @@ class App(Adw.Application):
             program_name='ExpMgr',
             version=self.ver,
             comments=_('Manage expiry dates'),
+            logo_icon_name=self.app_id,
         )
         dialog.present()
 
 
-def main(ver: str) -> int:
-    return App(ver).run(sys.argv)
+def main(app_id: str, ver: str) -> int:
+    return App(app_id, ver).run(sys.argv)

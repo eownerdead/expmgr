@@ -37,4 +37,4 @@ if __name__ == '__main__':
         install_import_hook('expmgr')
 
     from expmgr.main import main
-    sys.exit(main('@VERSION@'))
+    sys.exit(main('@APP_ID@', '@VERSION@'))
